@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dashboard de productividad</title>
+		<link rel="stylesheet" href="css/styles.css" />
+	</head>
+	<body class="dashboard-body">
+		<main class="dashboard">
+			<header class="dashboard-header">
+				<div>
+					<p class="eyebrow">Panel de gestión comercial</p>
+					<h1>Productividad del pool ejecutivo</h1>
+					<p class="description">Registra la actividad del equipo y observa el avance del período en un solo lugar.</p>
+				</div>
+				<a class="page-link" href="anteproyecto.html">Anteproyecto <span aria-hidden="true">↗</span></a>
+			</header>
+
+			<section class="toolbar" aria-label="Filtros del dashboard">
+				<label>Período<input type="month" id="period" value="2026-09" /></label>
+				<label>Meta de cierres<input type="number" id="target" min="0" value="20" /></label>
+				<button class="secondary-button" id="clear-data" type="button">Limpiar datos</button>
+			</section>
+
+			<section class="metrics" aria-label="Resumen de productividad">
+				<article class="metric-card"><span>Ejecutivos activos</span><strong id="active-executives">0</strong><small>con actividad registrada</small></article>
+				<article class="metric-card"><span>Gestiones realizadas</span><strong id="total-activities">0</strong><small>reuniones + seguimientos</small></article>
+				<article class="metric-card"><span>Cierres acumulados</span><strong id="total-closures">0</strong><small id="target-progress">de 20 de meta</small></article>
+				<article class="metric-card accent"><span>Conversión</span><strong id="conversion-rate">0%</strong><small>cierres sobre propuestas</small></article>
+			</section>
+
+			<section class="workspace-panel" aria-labelledby="team-title">
+				<div class="panel-heading">
+					<div><p class="eyebrow">Carga de información</p><h2 id="team-title">Desempeño por ejecutivo</h2></div>
+					<span class="live-status"><i></i> Actualización en vivo</span>
+				</div>
+				<div class="table-wrap">
+					<table>
+						<thead><tr><th>Ejecutivo</th><th>Reuniones</th><th>Propuestas</th><th>Cierres</th><th>Seguimientos</th><th>Conversión</th></tr></thead>
+						<tbody id="team-data">
+							<tr><td><input class="executive-name" type="text" value="Ejecutivo 01" /></td><td><input class="data-input meetings" type="number" min="0" value="12" /></td><td><input class="data-input proposals" type="number" min="0" value="8" /></td><td><input class="data-input closures" type="number" min="0" value="3" /></td><td><input class="data-input followups" type="number" min="0" value="14" /></td><td class="row-conversion">38%</td></tr>
+							<tr><td><input class="executive-name" type="text" value="Ejecutivo 02" /></td><td><input class="data-input meetings" type="number" min="0" value="9" /></td><td><input class="data-input proposals" type="number" min="0" value="6" /></td><td><input class="data-input closures" type="number" min="0" value="2" /></td><td><input class="data-input followups" type="number" min="0" value="11" /></td><td class="row-conversion">33%</td></tr>
+							<tr><td><input class="executive-name" type="text" value="Ejecutivo 03" /></td><td><input class="data-input meetings" type="number" min="0" value="15" /></td><td><input class="data-input proposals" type="number" min="0" value="10" /></td><td><input class="data-input closures" type="number" min="0" value="4" /></td><td><input class="data-input followups" type="number" min="0" value="18" /></td><td class="row-conversion">40%</td></tr>
+							<tr><td><input class="executive-name" type="text" value="Ejecutivo 04" /></td><td><input class="data-input meetings" type="number" min="0" value="7" /></td><td><input class="data-input proposals" type="number" min="0" value="5" /></td><td><input class="data-input closures" type="number" min="0" value="1" /></td><td><input class="data-input followups" type="number" min="0" value="8" /></td><td class="row-conversion">20%</td></tr>
+							<tr><td><input class="executive-name" type="text" value="Ejecutivo 05" /></td><td><input class="data-input meetings" type="number" min="0" value="10" /></td><td><input class="data-input proposals" type="number" min="0" value="7" /></td><td><input class="data-input closures" type="number" min="0" value="2" /></td><td><input class="data-input followups" type="number" min="0" value="12" /></td><td class="row-conversion">29%</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+
+			<section class="insights" aria-label="Indicadores adicionales">
+				<div><span>Promedio de reuniones</span><strong id="average-meetings">0</strong><small>por ejecutivo activo</small></div>
+				<div><span>Seguimientos pendientes</span><strong id="total-followups">0</strong><small>registrados en el período</small></div>
+				<div><span>Avance de la meta</span><strong id="goal-progress">0%</strong><small>cierres vs. objetivo</small></div>
+			</section>
+		</main>
+
+		<script>
+			const rows = [...document.querySelectorAll('#team-data tr')];
+			const number = (row, selector) => Number(row.querySelector(selector).value) || 0;
+			const formatPercent = (value) => `${Math.round(value)}%`;
+
+			function updateDashboard() {
+				let active = 0;
+				let meetings = 0;
+				let proposals = 0;
+				let closures = 0;
+				let followups = 0;
+
+				rows.forEach((row) => {
+					const values = ['.meetings', '.proposals', '.closures', '.followups'].map((selector) => number(row, selector));
+					const [rowMeetings, rowProposals, rowClosures, rowFollowups] = values;
+					if (values.some((value) => value > 0)) active += 1;
+					meetings += rowMeetings;
+					proposals += rowProposals;
+					closures += rowClosures;
+					followups += rowFollowups;
+					row.querySelector('.row-conversion').textContent = formatPercent(rowProposals ? (rowClosures / rowProposals) * 100 : 0);
+				});
+
+				const target = Number(document.querySelector('#target').value) || 0;
+				document.querySelector('#active-executives').textContent = active;
+				document.querySelector('#total-activities').textContent = meetings + followups;
+				document.querySelector('#total-closures').textContent = closures;
+				document.querySelector('#target-progress').textContent = `de ${target} de meta`;
+				document.querySelector('#conversion-rate').textContent = formatPercent(proposals ? (closures / proposals) * 100 : 0);
+				document.querySelector('#average-meetings').textContent = active ? (meetings / active).toFixed(1) : '0';
+				document.querySelector('#total-followups').textContent = followups;
+				document.querySelector('#goal-progress').textContent = formatPercent(target ? (closures / target) * 100 : 0);
+			}
+
+			document.querySelectorAll('input').forEach((input) => input.addEventListener('input', updateDashboard));
+			document.querySelector('#clear-data').addEventListener('click', () => {
+				document.querySelectorAll('.data-input').forEach((input) => { input.value = 0; });
+				updateDashboard();
+			});
+			updateDashboard();
+		</script>
+	</body>
+</html>
