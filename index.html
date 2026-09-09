@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Suma sencilla</title>
+		<link rel="stylesheet" href="css/styles.css" />
+	</head>
+	<body>
+		<main class="calculator">
+			<p class="eyebrow">Calculadora básica</p>
+			<h1>Suma 2 + 2</h1>
+			<p class="description">Introduce dos números y obtén el resultado.</p>
+
+			<form id="sum-form" class="sum-form">
+				<label>
+					Primer número
+					<input id="first-number" type="number" value="2" required />
+				</label>
+				<span class="operator" aria-hidden="true">+</span>
+				<label>
+					Segundo número
+					<input id="second-number" type="number" value="2" required />
+				</label>
+				<button type="submit">Sumar</button>
+			</form>
+
+			<output id="result" class="result" aria-live="polite">Resultado: 4</output>
+		</main>
+
+		<script>
+			const form = document.querySelector('#sum-form');
+			const result = document.querySelector('#result');
+
+			form.addEventListener('submit', (event) => {
+				event.preventDefault();
+
+				const firstNumber = Number(document.querySelector('#first-number').value);
+				const secondNumber = Number(document.querySelector('#second-number').value);
+				result.textContent = `Resultado: ${firstNumber + secondNumber}`;
+			});
+		</script>
+	</body>
+</html>
